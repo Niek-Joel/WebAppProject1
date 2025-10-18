@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Attendee Information</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
+</head>
+<body data-page="edit-attendee">
+    <div class="container">
+        <h1>Edit Attendee Information</h1>
+
+        <div class="attendee-selector">
+            <div class="form-group">
+                <label for="attendeeDropdown">Select Attendee:</label>
+                <select id="attendeeDropdown">
+                    <option value="">-- Select an Attendee --</option>
+                </select>
+            </div>
+        </div>
+
+        <form id="editForm">
+            <div class="form-group">
+                <label for="editFirstName">First Name:</label>
+                <input type="text" id="editFirstName" name="firstName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editLastName">Last Name:</label>
+                <input type="text" id="editLastName" name="lastName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editDisplayName">Display Name:</label>
+                <input type="text" id="editDisplayName" name="displayName" required>
+            </div>
+
+            <button id="saveBtn" type="submit" class="btn-submit">Save Changes</button>
+        </form>
+
+        <a href="index.html" class="btn-back">Back to Home</a>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+</html>

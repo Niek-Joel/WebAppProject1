@@ -1,11 +1,15 @@
 import sqlite3 from 'sqlite3';
 import express from 'express';
+import cors from 'cors';
 
 const app = express();
 const PORT = 8080;
 
 app.use(express.json());
+app.use(cors());
+app.use(express.static('public'));
 
+// DB conntection
 let db = new sqlite3.Database('./cs415_p1.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
         console.error(err.message);
@@ -14,6 +18,7 @@ let db = new sqlite3.Database('./cs415_p1.db', sqlite3.OPEN_READWRITE, (err) => 
         console.log("Connected to Database");
     }
 });
+
 
 // Training Sessions: (GET only)
 app.get('/session{/:session_id}', (request, response) => {  // NOTE: Can't use regular ? to specify optional paramter in this regexp version
@@ -34,7 +39,8 @@ app.get('/session{/:session_id}', (request, response) => {  // NOTE: Can't use r
     else { // Return all sessions
         db.all('SELECT * FROM session', [], (err, rows) => {
             if (err) {
-                console.error(err.message);
+                response.set('Content-Type', 'application/json');
+                response.send(JSON.stringify({success: false, error: err.message}));
             }
             response.set('Content-Type', 'application/json');
             response.send(JSON.stringify(rows));
@@ -224,9 +230,18 @@ app.get('/attendee', (request, response) => {
             }
         });
     }
-    else { // Can potentially just return all attendees if needed.
-        response.set('Content-Type', 'application/json');
-        response.send(JSON.stringify({success: false, error: 'Please specify an attendee_id.'}));
+    else {
+        db.all('SELECT * FROM attendee', [], (err, rows) => {
+            if (err) {
+                response.set('Content-Type', 'application/json');
+                response.send(JSON.stringify({success: false, error: err.message}));
+            }
+            else {
+                rows.success = true;
+                response.set('Content-Type', 'application/json');
+                response.send(JSON.stringify(rows));
+            }
+        });
     }
 });
 app.post('/attendee', (request, response) => {
@@ -239,23 +254,38 @@ app.post('/attendee', (request, response) => {
         response.send(JSON.stringify({success: false, error: 'Need firstname, lastname, and displayname.'}));
         return;
     }
-    db.run(
-        'INSERT INTO attendee (firstname, lastname, displayname) VALUES (?,?,?)',
+    db.get(
+        'SELECT * FROM attendee WHERE firstname = ? AND lastname = ? AND displayname = ?',
         [firstname, lastname, displayname],
-        function (err) {
+        (err, row) => {
             if (err) {
                 response.set('Content-Type', 'application/json');
                 response.send(JSON.stringify({success: false, error: err.message}));
-            }
-            else {
+            } else if (row) {
+                // Attendee already exists
                 response.set('Content-Type', 'application/json');
-                response.send(JSON.stringify({
-                    success: true,
-                    attendee_id: this.lastID,
-                    firstname: firstname,
-                    lastname: lastname,
-                    displayname: displayname
-                }));
+                response.send(JSON.stringify({success: false, error: 'This attendee already exists'}));
+            } else {
+                // Attendee doesn't exist, create them
+                db.run(
+                    'INSERT INTO attendee (firstname, lastname, displayname) VALUES (?,?,?)',
+                    [firstname, lastname, displayname],
+                    function (err) {
+                        if (err) {
+                            response.set('Content-Type', 'application/json');
+                            response.send(JSON.stringify({success: false, error: err.message}));
+                        } else {
+                            response.set('Content-Type', 'application/json');
+                            response.send(JSON.stringify({
+                                success: true,
+                                attendee_id: this.lastID,
+                                firstname: firstname,
+                                lastname: lastname,
+                                displayname: displayname
+                            }));
+                        }
+                    }
+                );
             }
         }
     );
@@ -266,7 +296,7 @@ app.put('/attendee', (request, response) => {
     const lastname = request.body.lastname;
     const displayname = request.body.displayname;
 
-    if (attendee_id === undefined || firstname === undefined || lastname === undefined || displayname === undefined) {
+    if (!attendee_id || !firstname || !lastname || !displayname) {
         response.set('Content-Type', 'application/json');
         response.send(JSON.stringify({success: false, error: 'Need attendee_id, firstname, lastname, displayname'}));
         return;
@@ -299,19 +329,23 @@ app.put('/attendee', (request, response) => {
 });
 
 
-
 // Start
 app.listen(PORT, () => {
     console.log(`Registration Desk API server running on http://localhost:${PORT}`);
 });
 
-// db.close((err) => {
-//     if (err) {
-//         console.error(err.message);
-//     }
-//     else {
-//         console.log('Database closed.');
-//     }
-// });
+
+// When interrupted, close database
+process.on('SIGINT', () => {
+    db.close((err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        else {
+            console.log('Database closed.');
+        }
+    });
+    process.exit(0);  // Succesful exit
+});
 
 

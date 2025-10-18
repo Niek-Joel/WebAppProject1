@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Session Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
+</head>
+<body data-page="session-management">
+    <div class="container">
+        <h1>Session Management</h1>
+
+        <div class="selection-area">
+            <div class="form-group">
+                <label for="sessionDropdown">Select Session:</label>
+                <select id="sessionDropdown">
+                    <option value="">-- Select a Session --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="attendeeDropdown">Select Attendee:</label>
+                <select id="attendeeDropdown">
+                    <option value="">-- Select an Attendee --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button id="listBtn" class="action-btn">List Registrations</button>
+            <button id="updateBtn" class="action-btn">Update Registration</button>
+            <button id="cancelBtn" class="action-btn">Cancel Registration</button>
+        </div>
+
+        <div id="resultsArea"></div>
+
+        <a href="index.html" class="btn-back">Back to Home</a>
+    </div>
+
+    <script src="client.js"></script>
+    </body>
+</html>

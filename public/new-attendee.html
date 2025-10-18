@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New Attendee Registration</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
+</head>
+<body data-page="new-attendee">
+    <div class="container">
+        <h1>New Attendee Registration</h1>
+
+        <form id="attendeeRegistrationForm">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="displayName">Display Name:</label>
+                <input type="text" id="displayName" name="displayName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sessionDropdown">Training Session:</label>
+                <select id="sessionDropdown" name="session" required>
+                    <option value="">-- Select a Session --</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">Register Attendee</button>
+        </form>
+
+        <a href="index.html" class="btn-back">Back to Home</a>
+    </div>
+    <script src="client.js"></script>
+</body>
+</html>
